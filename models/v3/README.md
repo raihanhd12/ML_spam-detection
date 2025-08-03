@@ -108,11 +108,11 @@ for text, result in zip(texts, results):
 
 ## Key Features
 
-✅ **Fine-tuned** from v2 model with email dataset
-✅ **Good accuracy** (95%) on spam detection with Indonesian context
-✅ **Better handling** for spam email content
-✅ **Enhanced performance** on Indonesian email text
-✅ **Optimized** for Indonesian email and social media spam detection
+- **Fine-tuned** from v2 model with email dataset
+- **Good accuracy** (95%) on spam detection with Indonesian context
+- **Better handling** for spam email content
+- **Enhanced performance** on Indonesian email text
+- **Optimized** for Indonesian email and social media spam detection
 
 ## Label Mapping
 
