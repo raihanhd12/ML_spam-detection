@@ -10,64 +10,62 @@ tags:
   - twitter
   - retrained
 datasets:
-  - nahiar/spam_detection_v2
+  - nahiar/mail_data
 pipeline_tag: text-classification
 inference: true
-base_model: nahiar/spam-detection-bert-v1
+base_model: nahiar/spam-detection-bert-v2
 model_type: bert
 library_name: transformers
 widget:
-  - text: "lacak hp hilang by no hp / imei lacak penipu/scammer/tabrak lari/terror/revengeporn sadap / hack / pulihkan akun"
-    example_title: "Spam Example"
   - text: "Senin, 21 Juli 2025, Samapta Polsek Ngaglik melaksanakan patroli stasioner balong jalan palagan donoharjo"
     example_title: "Ham Example"
   - text: "Mari berkontribusi terhadap gerakan rakyat dengan membeli baju ini seharga Rp 160.000. Hubungi kami melalui WA 08977472296"
-    example_title: "Obvious Spam"
+    example_title: "Spam Example"
 model-index:
-  - name: spam-detection-bert
+  - name: spam-detection-bert-v3
     results:
       - task:
           type: text-classification
           name: Text Classification
         dataset:
-          name: Indonesian Spam Detection Dataset v2
-          type: nahiar/spam_detection_v2
+          name: Mail Data Indonesian Spam Detection
+          type: csv
         metrics:
           - name: Accuracy
             type: accuracy
-            value: 0.99
+            value: 0.95
           - name: F1 Score (Weighted)
             type: f1
-            value: 0.99
+            value: 0.95
           - name: Precision (HAM)
             type: precision
-            value: 0.99
+            value: 0.98
           - name: Recall (HAM)
             type: recall
-            value: 1.00
+            value: 0.96
           - name: Precision (SPAM)
             type: precision
-            value: 1.00
+            value: 0.77
           - name: Recall (SPAM)
             type: recall
-            value: 0.83
+            value: 0.85
 ---
 
 # Indonesian Spam Detection BERT
 
-Model BERT untuk deteksi spam dalam bahasa Indonesia dengan akurasi **99%**. Model ini telah di-retrain dengan dataset yang telah diperbarui dan dilabeli ulang untuk performa yang optimal pada konten Indonesia.
+BERT model for spam detection in Indonesian with **95% accuracy**. This v3 model has been fine-tuned from v2 model with email dataset for optimal performance on Indonesian content.
 
 ## Quick Start
 
 ```python
 from transformers import pipeline
 
-# Cara termudah menggunakan model
+# The easiest way to use the model
 classifier = pipeline("text-classification",
-                     model="nahiar/spam-detection-bert",
-                     tokenizer="nahiar/spam-detection-bert")
+                     model="nahiar/spam-detection-bert-v3",
+                     tokenizer="nahiar/spam-detection-bert-v3")
 
-# Test dengan teks
+# Test with text
 texts = [
     "lacak hp hilang by no hp / imei lacak penipu/scammer/tabrak lari/terror/revengeporn sadap / hack / pulihkan akun",
     "Senin, 21 Juli 2025, Samapta Polsek Ngaglik melaksanakan patroli stasioner balong jalan palagan donoharjo",
@@ -83,7 +81,7 @@ for text, result in zip(texts, results):
 
 ## Model Details
 
-- **Base Model**: nahiar/spam-detection-bert-v1 (fine-tuned from cahya/bert-base-indonesian-1.5G)
+- **Base Model**: nahiar/spam-detection-bert-v2
 - **Task**: Binary Text Classification (Spam vs Ham)
 - **Language**: Indonesian (Bahasa Indonesia)
 - **Model Size**: ~110M parameters
@@ -94,50 +92,38 @@ for text, result in zip(texts, results):
 
 ## Performance
 
-| Metric               | HAM  | SPAM | Overall |
-| -------------------- | ---- | ---- | ------- |
-| Precision            | 99%  | 100% | 99%     |
-| Recall               | 100% | 83%  | 99%     |
-| F1-Score             | 99%  | 91%  | 99%     |
-| **Overall Accuracy** | -    | -    | **99%** |
+| Metric               | HAM | SPAM | Overall |
+| -------------------- | --- | ---- | ------- |
+| Precision            | 98% | 77%  | 95%     |
+| Recall               | 96% | 85%  | 95%     |
+| F1-Score             | 97% | 81%  | 95%     |
+| **Overall Accuracy** | -   | -    | **95%** |
 
 ### Confusion Matrix
 
-- True HAM correctly predicted: 430/430 (100%)
-- True SPAM correctly predicted: 25/30 (83%)
-- False Positives (HAM predicted as SPAM): 0
-- False Negatives (SPAM predicted as HAM): 5
-
-## Dataset
-
-Model v2 ini dilatih ulang menggunakan dataset yang telah diperbarui dan dilabeli ulang secara manual:
-
-- **Dataset**: spam_re_labelled_vNew.csv
-- **Total Samples**: 460 pesan
-- **Distribution**: 430 HAM, 30 SPAM
-- **Encoding**: Latin-1
-- **Quality**: Manual re-labeling untuk akurasi yang lebih tinggi
-
-**Updated**: Januari 2025
+- True HAM correctly predicted: 953/988 (96%)
+- True SPAM correctly predicted: 115/135 (85%)
+- False Positives (HAM predicted as SPAM): 35
+- False Negatives (SPAM predicted as HAM): 20
 
 ## Key Features
 
-✅ **Re-trained** dengan dataset yang telah dilabeli ulang secara manual
-✅ **High accuracy** (99%) pada deteksi spam dengan konteks Indonesia
-✅ **Better handling** untuk pesan dengan format yang kompleks
-✅ **Enhanced performance** pada teks dengan campuran formal dan informal
-✅ **Optimized** untuk konten media sosial Indonesia
+✅ **Fine-tuned** from v2 model with email dataset
+✅ **Good accuracy** (95%) on spam detection with Indonesian context
+✅ **Better handling** for spam email content
+✅ **Enhanced performance** on Indonesian email text
+✅ **Optimized** for Indonesian email and social media spam detection
 
 ## Label Mapping
 
 ```
-0: "HAM" (tidak spam)
+0: "HAM" (not spam)
 1: "SPAM" (spam)
 ```
 
 ## Training Process
 
-Model ini di-retrain menggunakan:
+This model was retrained using:
 
 - **Optimizer**: AdamW
 - **Learning Rate**: 2e-5
@@ -152,9 +138,9 @@ Model ini di-retrain menggunakan:
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-# Load model dan tokenizer
-tokenizer = AutoTokenizer.from_pretrained("nahiar/spam-detection-bert")
-model = AutoModelForSequenceClassification.from_pretrained("nahiar/spam-detection-bert")
+# Load model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("nahiar/spam-detection-bert-v3")
+model = AutoModelForSequenceClassification.from_pretrained("nahiar/spam-detection-bert-v3")
 
 def predict_spam(text):
     inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True)
@@ -178,16 +164,16 @@ print(f"Prediksi: {result} (Confidence: {confidence:.4f})")
   title={Indonesian Spam Detection BERT},
   author={Raihan Hidayatullah Djunaedi},
   year={2025},
-  url={https://huggingface.co/nahiar/spam-detection-bert}
+  url={https://huggingface.co/nahiar/spam-detection-bert-v3}
 }
 ```
 
 ## Changelog
 
-### Current Version (January 2025)
+### Current Version v3 (August 2025)
 
-- Re-trained model dengan dataset yang telah dilabeli ulang secara manual
-- Enhanced handling untuk konten Indonesia yang kompleks
-- Better performance pada deteksi spam dengan konteks lokal Indonesia
-- Optimized untuk konten media sosial (Twitter, Instagram, dll)
-- Improved accuracy dengan distribusi dataset yang lebih balanced
+- Fine-tuned from v2 model with email dataset (mail_data.csv)
+- Enhanced handling for Indonesian spam email content
+- Good performance (95% accuracy) on email spam detection
+- Optimized for Indonesian email and social media content
+- Improved with GPU-accelerated training using RTX 3080
