@@ -1,4 +1,5 @@
 datasets
+ipywidgets
 pandas
 numpy
 scikit-learn
@@ -19,4 +20,6 @@ tensorflow
 tf-keras
 transformers
 torch
+torchvision
 tabulate
+hf_xet
